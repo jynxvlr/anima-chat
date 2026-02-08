@@ -1,4 +1,3 @@
-// Single chat message component
 "use client"
 
 import type { ChatMessage as ChatMessageType } from "@/lib/llm-providers"
@@ -24,67 +23,61 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false)
 
-  // Copy message content to clipboard
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(message.content)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error("Fehler beim Kopieren:", error)
+      console.error("Error copying:", error)
     }
   }
 
-  // Calculate word count
   const wordCount = message.content.split(/\s+/).filter((word) => word.length > 0).length
 
   const isUser = message.role === "user"
-  const isDark = theme === "dark"
 
   return (
     <div
-      className={`flex gap-4 ${compactMode ? "p-2" : "p-4"} ${
-        isUser ? (isDark ? "bg-blue-50/10" : "bg-blue-50") : isDark ? "bg-gray-50/5" : "bg-gray-50"
-      } rounded-lg backdrop-blur-sm`}
+      className={`flex gap-3 ${compactMode ? "py-2" : "py-4"} animate-fade-in`}
     >
       {/* Avatar */}
       <div
-        className={`flex-shrink-0 ${compactMode ? "w-6 h-6" : "w-8 h-8"} rounded-full flex items-center justify-center ${
-          isUser ? "bg-blue-500" : isDark ? "bg-gray-600" : "bg-gray-400"
+        className={`flex-shrink-0 ${compactMode ? "w-6 h-6" : "w-7 h-7"} rounded-full flex items-center justify-center ${
+          isUser ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
         }`}
       >
         {isUser ? (
-          <User size={compactMode ? 12 : 16} className="text-white" />
+          <User size={compactMode ? 12 : 14} />
         ) : (
-          <Bot size={compactMode ? 12 : 16} className="text-white" />
+          <Bot size={compactMode ? 12 : 14} />
         )}
       </div>
 
-      {/* Message Content */}
+      {/* Content */}
       <div className="flex-1 min-w-0">
         {/* Header */}
-        <div className={`flex items-center gap-2 ${compactMode ? "mb-1" : "mb-2"}`}>
-          <span
-            className={`${compactMode ? "text-xs" : "text-sm"} font-medium ${
-              isDark ? "text-gray-300" : "text-gray-700"
-            }`}
-          >
-            {isUser ? "Du" : "KI"}
+        <div className={`flex items-center gap-2 ${compactMode ? "mb-0.5" : "mb-1.5"}`}>
+          <span className={`${compactMode ? "text-xs" : "text-[13px]"} font-medium text-foreground`}>
+            {isUser ? "You" : "AI"}
           </span>
 
           {showTimestamp && (
-            <span className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-              {new Date(message.timestamp).toLocaleTimeString("de-DE")}
+            <span className="text-[11px] text-muted-foreground">
+              {new Date(message.timestamp).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
             </span>
           )}
 
           {showWordCount && (
-            <span className={`text-xs ${isDark ? "text-gray-500" : "text-gray-400"}`}>{wordCount} Words</span>
+            <span className="text-[11px] text-muted-foreground">{wordCount} words</span>
           )}
         </div>
 
-        {/* Message content */}
-        <div className={isDark ? "text-gray-100" : "text-gray-900"}>
+        {/* Message body */}
+        <div className="text-[14px] leading-relaxed text-foreground/90">
           {isUser ? (
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
           ) : (
@@ -92,25 +85,21 @@ export function ChatMessage({
           )}
         </div>
 
-        {/* Actions */}
+        {/* Copy action */}
         {!isUser && (
           <div className={compactMode ? "mt-1" : "mt-2"}>
             <Button
               variant="ghost"
               size="sm"
               onClick={copyToClipboard}
-              className={`${compactMode ? "h-6 text-xs" : "h-8"} ${
-                isDark
-                  ? "text-gray-400 hover:text-gray-200 hover:bg-gray-700"
-                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
-              }`}
+              className={`${compactMode ? "h-6 text-[11px]" : "h-7 text-xs"} text-muted-foreground hover:text-foreground gap-1`}
             >
               {copied ? (
-                <Check size={compactMode ? 12 : 14} className="mr-1 text-green-500" />
+                <Check size={compactMode ? 11 : 13} className="text-primary" />
               ) : (
-                <Copy size={compactMode ? 12 : 14} className="mr-1" />
+                <Copy size={compactMode ? 11 : 13} />
               )}
-              {copied ? "Kopiert!" : "Kopieren"}
+              {copied ? "Copied" : "Copy"}
             </Button>
           </div>
         )}

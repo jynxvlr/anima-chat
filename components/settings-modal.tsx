@@ -1,8 +1,7 @@
-// Settings Modal Component
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, X, Save, RotateCcw, Eye, EyeOff, Palette, Zap, Globe } from "lucide-react"
+import { Settings, X, Save, RotateCcw, Eye, EyeOff, Zap, Globe, Palette, Code } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,7 +10,6 @@ import { Switch } from "@/components/ui/switch"
 import { Slider } from "@/components/ui/slider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import type { LLMConfig } from "@/lib/config"
@@ -33,7 +31,6 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
     setHasChanges(false)
   }, [config, isOpen])
 
-  // Follow Changes
   const updateConfig = (updates: Partial<LLMConfig>) => {
     setLocalConfig((prev) => ({ ...prev, ...updates }))
     setHasChanges(true)
@@ -51,20 +48,17 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
     updateConfig({ ui: { ...localConfig.ui, ...updates } })
   }
 
-  // Refresh API Key
   const updateApiKey = (provider: string, key: string) => {
     updateLLMConfig({
       api_keys: { ...localConfig.llm.api_keys, [provider]: key },
     })
   }
 
-  // Safe
   const handleSave = () => {
     onSave(localConfig)
     setHasChanges(false)
   }
 
-  // Reset
   const handleReset = () => {
     setLocalConfig(config)
     setHasChanges(false)
@@ -73,91 +67,98 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-gray-900 rounded-xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-card rounded-xl border border-border w-full max-w-3xl max-h-[85vh] overflow-hidden shadow-lg">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700">
-          <div className="flex items-center gap-3">
-            <Settings className="h-6 w-6 text-blue-400" />
-            <h2 className="text-xl font-semibold text-white">Settings</h2>
+        <div className="flex items-center justify-between px-6 h-14 border-b border-border">
+          <div className="flex items-center gap-2.5">
+            <Settings className="h-4 w-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-foreground">Settings</h2>
             {hasChanges && (
-              <Badge variant="secondary" className="bg-yellow-600/20 text-yellow-400">
-                Unsaved changes
+              <Badge variant="secondary" className="text-[11px] h-5 bg-primary/10 text-primary border-0">
+                Unsaved
               </Badge>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {hasChanges && (
               <>
                 <Button
                   onClick={handleReset}
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="border-gray-600 text-gray-300 hover:text-white bg-transparent"
+                  className="h-7 text-xs text-muted-foreground hover:text-foreground gap-1.5"
                 >
-                  <RotateCcw className="h-4 w-4 mr-2" />
+                  <RotateCcw className="h-3 w-3" />
                   Reset
                 </Button>
 
-                <Button onClick={handleSave} size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <Save className="h-4 w-4 mr-2" />
+                <Button
+                  onClick={handleSave}
+                  size="sm"
+                  className="h-7 text-xs bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5"
+                >
+                  <Save className="h-3 w-3" />
                   Save
                 </Button>
               </>
             )}
 
-            <Button onClick={onClose} variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-              <X className="h-5 w-5" />
+            <Button
+              onClick={onClose}
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="p-6 overflow-y-auto max-h-[calc(85vh-56px)]">
           <Tabs defaultValue="llm" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-gray-800">
-              <TabsTrigger value="llm" className="data-[state=active]:bg-blue-600">
-                <Zap className="h-4 w-4 mr-2" />
+            <TabsList className="bg-muted h-9 p-1">
+              <TabsTrigger value="llm" className="text-xs gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground">
+                <Zap className="h-3 w-3" />
                 AI Models
               </TabsTrigger>
-              <TabsTrigger value="app" className="data-[state=active]:bg-blue-600">
-                <Globe className="h-4 w-4 mr-2" />
+              <TabsTrigger value="app" className="text-xs gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground">
+                <Globe className="h-3 w-3" />
                 General
               </TabsTrigger>
-              <TabsTrigger value="ui" className="data-[state=active]:bg-blue-600">
-                <Palette className="h-4 w-4 mr-2" />
-                User Interface
+              <TabsTrigger value="ui" className="text-xs gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground">
+                <Palette className="h-3 w-3" />
+                Interface
               </TabsTrigger>
-              <TabsTrigger value="advanced" className="data-[state=active]:bg-blue-600">
-                <Settings className="h-4 w-4 mr-2" />
-                Config
+              <TabsTrigger value="advanced" className="text-xs gap-1.5 data-[state=active]:bg-background data-[state=active]:text-foreground">
+                <Code className="h-3 w-3" />
+                Advanced
               </TabsTrigger>
             </TabsList>
 
             {/* AI Models Tab */}
             <TabsContent value="llm" className="space-y-6">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Provider & Models</CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Configure your AI providers and available models
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Active Provider */}
-                  <div className="space-y-2">
-                    <Label className="text-white">Active Provider</Label>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">Provider & Models</h3>
+                  <p className="text-xs text-muted-foreground">Configure your AI providers and models</p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-foreground">Active Provider</Label>
                     <Select
                       value={localConfig.llm.active_provider}
                       onValueChange={(value) => updateLLMConfig({ active_provider: value })}
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger className="h-9 bg-background border-border text-sm">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
+                      <SelectContent>
                         {Object.keys(localConfig.llm.models).map((provider) => (
-                          <SelectItem key={provider} value={provider} className="text-white">
+                          <SelectItem key={provider} value={provider}>
                             {provider}
                           </SelectItem>
                         ))}
@@ -165,69 +166,69 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
                     </Select>
                   </div>
 
-                  {/* Standard Modell */}
-                  <div className="space-y-2">
-                    <Label className="text-white">Standard model</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-foreground">Default Model</Label>
                     <Select
                       value={localConfig.llm.default_model}
                       onValueChange={(value) => updateLLMConfig({ default_model: value })}
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger className="h-9 bg-background border-border text-sm">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
+                      <SelectContent>
                         {localConfig.llm.models[localConfig.llm.active_provider]?.map((model) => (
-                          <SelectItem key={model} value={model} className="text-white">
+                          <SelectItem key={model} value={model}>
                             {model}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  <Separator className="bg-gray-600" />
+                <Separator />
 
-                  {/* API Key */}
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-white">API Key</Label>
-                      <Button
-                        onClick={() => setShowApiKeys(!showApiKeys)}
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-400 hover:text-white"
-                      >
-                        {showApiKeys ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-
-                    {Object.entries(localConfig.llm.api_keys).map(([provider, key]) => (
-                      <div key={provider} className="space-y-2">
-                        <Label className="text-gray-300 capitalize">{provider}</Label>
-                        <Input
-                          type={showApiKeys ? "text" : "password"}
-                          value={key}
-                          onChange={(e) => updateApiKey(provider, e.target.value)}
-                          placeholder={`${provider} API Key`}
-                          className="bg-gray-700 border-gray-600 text-white"
-                        />
-                      </div>
-                    ))}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs text-foreground">API Keys</Label>
+                    <Button
+                      onClick={() => setShowApiKeys(!showApiKeys)}
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      {showApiKeys ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Modell Parameter</CardTitle>
-                  <CardDescription className="text-gray-400">Feinabstimmung der KI-Antworten</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Temperature */}
-                  <div className="space-y-3">
+                  {Object.entries(localConfig.llm.api_keys).map(([provider, key]) => (
+                    <div key={provider} className="space-y-1">
+                      <Label className="text-[11px] text-muted-foreground capitalize">{provider}</Label>
+                      <Input
+                        type={showApiKeys ? "text" : "password"}
+                        value={key}
+                        onChange={(e) => updateApiKey(provider, e.target.value)}
+                        placeholder={`${provider} API Key`}
+                        className="h-9 bg-background border-border text-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">Model Parameters</h3>
+                  <p className="text-xs text-muted-foreground">Fine-tune the AI responses</p>
+                </div>
+
+                <div className="space-y-5">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Temperature</Label>
-                      <span className="text-sm text-gray-400">{localConfig.llm.temperature}</span>
+                      <Label className="text-xs text-foreground">Temperature</Label>
+                      <span className="text-xs font-mono text-muted-foreground">{localConfig.llm.temperature}</span>
                     </div>
                     <Slider
                       value={[localConfig.llm.temperature]}
@@ -235,16 +236,14 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
                       max={2}
                       min={0}
                       step={0.1}
-                      className="w-full"
                     />
-                    <p className="text-xs text-gray-500">Lower values = more consistent, higher values = more creative</p>
+                    <p className="text-[11px] text-muted-foreground">Lower = more consistent, higher = more creative</p>
                   </div>
 
-                  {/* Max Tokens */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Max Tokens</Label>
-                      <span className="text-sm text-gray-400">{localConfig.llm.max_tokens}</span>
+                      <Label className="text-xs text-foreground">Max Tokens</Label>
+                      <span className="text-xs font-mono text-muted-foreground">{localConfig.llm.max_tokens}</span>
                     </div>
                     <Slider
                       value={[localConfig.llm.max_tokens]}
@@ -252,15 +251,13 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
                       max={4096}
                       min={256}
                       step={256}
-                      className="w-full"
                     />
                   </div>
 
-                  {/* Top P */}
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label className="text-white">Top P</Label>
-                      <span className="text-sm text-gray-400">{localConfig.llm.top_p}</span>
+                      <Label className="text-xs text-foreground">Top P</Label>
+                      <span className="text-xs font-mono text-muted-foreground">{localConfig.llm.top_p}</span>
                     </div>
                     <Slider
                       value={[localConfig.llm.top_p]}
@@ -268,176 +265,166 @@ export function SettingsModal({ isOpen, onClose, config, onSave }: SettingsModal
                       max={1}
                       min={0}
                       step={0.1}
-                      className="w-full"
                     />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">System Prompt</CardTitle>
-                  <CardDescription className="text-gray-400">Define the behavior of the AI</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Textarea
-                    value={localConfig.llm.system_prompt}
-                    onChange={(e) => updateLLMConfig({ system_prompt: e.target.value })}
-                    placeholder="Du bist ein hilfreicher Assistent..."
-                    className="min-h-[100px] bg-gray-700 border-gray-600 text-white"
-                  />
-                </CardContent>
-              </Card>
+              <Separator />
+
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">System Prompt</h3>
+                  <p className="text-xs text-muted-foreground">Define the AI behavior</p>
+                </div>
+                <Textarea
+                  value={localConfig.llm.system_prompt}
+                  onChange={(e) => updateLLMConfig({ system_prompt: e.target.value })}
+                  placeholder="You are a helpful assistant..."
+                  className="min-h-[100px] bg-background border-border text-sm"
+                />
+              </div>
             </TabsContent>
 
             {/* General Tab */}
             <TabsContent value="app" className="space-y-6">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">General settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-white">Design</Label>
-                    <Select
-                      value={localConfig.app.theme}
-                      onValueChange={(value: "dark" | "light") => updateAppConfig({ theme: value })}
-                    >
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-800 border-gray-600">
-                        <SelectItem value="dark" className="text-white">
-                          Dark
-                        </SelectItem>
-                        <SelectItem value="light" className="text-white">
-                          Light
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">General Settings</h3>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-foreground">Theme</Label>
+                  <Select
+                    value={localConfig.app.theme}
+                    onValueChange={(value: "dark" | "light") => updateAppConfig({ theme: value })}
+                  >
+                    <SelectTrigger className="h-9 bg-background border-border text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="light">Light</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-xs text-foreground">Auto Save</Label>
+                    <p className="text-[11px] text-muted-foreground">Automatically save chats</p>
                   </div>
+                  <Switch
+                    checked={localConfig.app.auto_save}
+                    onCheckedChange={(checked) => updateAppConfig({ auto_save: checked })}
+                  />
+                </div>
 
-                  <Separator className="bg-gray-600" />
-
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-white">Auto Save</Label>
-                      <p className="text-sm text-gray-400">Automatically save chats</p>
-                    </div>
-                    <Switch
-                      checked={localConfig.app.auto_save}
-                      onCheckedChange={(checked) => updateAppConfig({ auto_save: checked })}
-                    />
+                    <Label className="text-xs text-foreground">Max chat history</Label>
+                    <span className="text-xs font-mono text-muted-foreground">{localConfig.app.max_history_files}</span>
                   </div>
-
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-white">Max. chat history</Label>
-                      <span className="text-sm text-gray-400">{localConfig.app.max_history_files}</span>
-                    </div>
-                    <Slider
-                      value={[localConfig.app.max_history_files]}
-                      onValueChange={([value]) => updateAppConfig({ max_history_files: value })}
-                      max={500}
-                      min={10}
-                      step={10}
-                      className="w-full"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
+                  <Slider
+                    value={[localConfig.app.max_history_files]}
+                    onValueChange={([value]) => updateAppConfig({ max_history_files: value })}
+                    max={500}
+                    min={10}
+                    step={10}
+                  />
+                </div>
+              </div>
             </TabsContent>
 
             {/* UI Tab */}
             <TabsContent value="ui" className="space-y-6">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">User Interface</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-white">Sidebar width</Label>
-                      <span className="text-sm text-gray-400">{localConfig.ui.sidebar_width}px</span>
-                    </div>
-                    <Slider
-                      value={[localConfig.ui.sidebar_width]}
-                      onValueChange={([value]) => updateUIConfig({ sidebar_width: value })}
-                      max={400}
-                      min={200}
-                      step={20}
-                      className="w-full"
-                    />
-                  </div>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">Interface</h3>
+                </div>
 
-                  <Separator className="bg-gray-600" />
-
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-white">Show timestamp</Label>
-                      <p className="text-sm text-gray-400">Show timestamps for messages</p>
-                    </div>
-                    <Switch
-                      checked={localConfig.ui.show_timestamps}
-                      onCheckedChange={(checked) => updateUIConfig({ show_timestamps: checked })}
-                    />
+                    <Label className="text-xs text-foreground">Sidebar width</Label>
+                    <span className="text-xs font-mono text-muted-foreground">{localConfig.ui.sidebar_width}px</span>
                   </div>
+                  <Slider
+                    value={[localConfig.ui.sidebar_width]}
+                    onValueChange={([value]) => updateUIConfig({ sidebar_width: value })}
+                    max={400}
+                    min={200}
+                    step={20}
+                  />
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-white">Show word count</Label>
-                      <p className="text-sm text-gray-400">Show word count in messages</p>
-                    </div>
-                    <Switch
-                      checked={localConfig.ui.show_word_count}
-                      onCheckedChange={(checked) => updateUIConfig({ show_word_count: checked })}
-                    />
-                  </div>
+                <Separator />
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-white">Compact mode</Label>
-                      <p className="text-sm text-gray-400">Reduced spacing and smaller elements</p>
-                    </div>
-                    <Switch
-                      checked={localConfig.ui.compact_mode}
-                      onCheckedChange={(checked) => updateUIConfig({ compact_mode: checked })}
-                    />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-xs text-foreground">Show timestamps</Label>
+                    <p className="text-[11px] text-muted-foreground">Display time on messages</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <Switch
+                    checked={localConfig.ui.show_timestamps}
+                    onCheckedChange={(checked) => updateUIConfig({ show_timestamps: checked })}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-xs text-foreground">Show word count</Label>
+                    <p className="text-[11px] text-muted-foreground">Display word count on messages</p>
+                  </div>
+                  <Switch
+                    checked={localConfig.ui.show_word_count}
+                    onCheckedChange={(checked) => updateUIConfig({ show_word_count: checked })}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-xs text-foreground">Compact mode</Label>
+                    <p className="text-[11px] text-muted-foreground">Reduced spacing and smaller elements</p>
+                  </div>
+                  <Switch
+                    checked={localConfig.ui.compact_mode}
+                    onCheckedChange={(checked) => updateUIConfig({ compact_mode: checked })}
+                  />
+                </div>
+              </div>
             </TabsContent>
 
-            {/* Advanced  Tab */}
+            {/* Advanced Tab */}
             <TabsContent value="advanced" className="space-y-6">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Advanced settings</CardTitle>
-                  <CardDescription className="text-gray-400">For experienced users</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-white">Configuration (YAML)</Label>
-                    <Textarea
-                      value={JSON.stringify(localConfig, null, 2)}
-                      onChange={(e) => {
-                        try {
-                          const parsed = JSON.parse(e.target.value)
-                          setLocalConfig(parsed)
-                          setHasChanges(true)
-                        } catch (error) {
-                          // Ignore invalid JSON
-                        }
-                      }}
-                      className="min-h-[300px] bg-gray-700 border-gray-600 text-white font-mono text-sm"
-                      placeholder="Configuration as JSON..."
-                    />
-                    <p className="text-xs text-gray-500">
-                      Caution: Invalid configuration may damage the application.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-medium text-foreground mb-1">Advanced Settings</h3>
+                  <p className="text-xs text-muted-foreground">For experienced users</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-foreground">Configuration (JSON)</Label>
+                  <Textarea
+                    value={JSON.stringify(localConfig, null, 2)}
+                    onChange={(e) => {
+                      try {
+                        const parsed = JSON.parse(e.target.value)
+                        setLocalConfig(parsed)
+                        setHasChanges(true)
+                      } catch {
+                        // Ignore invalid JSON
+                      }
+                    }}
+                    className="min-h-[300px] bg-background border-border font-mono text-xs"
+                    placeholder="Configuration as JSON..."
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Warning: Invalid configuration may break the application.
+                  </p>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
         </div>

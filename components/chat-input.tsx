@@ -1,12 +1,10 @@
-// Message input component with auto-resize
 "use client"
 
 import type React from "react"
-
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Send, Square } from "lucide-react"
+import { ArrowUp, Square } from "lucide-react"
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void
@@ -19,13 +17,11 @@ export function ChatInput({
   onSendMessage,
   disabled = false,
   theme = "dark",
-  placeholder = "Schreibe eine Nachricht...",
+  placeholder = "Write a message...",
 }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const isDark = theme === "dark"
 
-  // Auto-resize the text area based on content
   useEffect(() => {
     const textarea = textareaRef.current
     if (textarea) {
@@ -49,13 +45,9 @@ export function ChatInput({
   }
 
   return (
-    <div
-      className={`border-t p-4 ${
-        isDark ? "border-gray-700 bg-gray-900/50" : "border-gray-200 bg-white/50"
-      } backdrop-blur-sm`}
-    >
-      <div className="flex gap-2 items-end max-w-4xl mx-auto">
-        <div className="flex-1">
+    <div className="border-t border-border px-4 py-3 bg-background">
+      <div className="flex gap-2 items-end max-w-3xl mx-auto">
+        <div className="flex-1 relative">
           <Textarea
             ref={textareaRef}
             value={message}
@@ -63,11 +55,7 @@ export function ChatInput({
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={disabled}
-            className={`min-h-[44px] max-h-[200px] resize-none ${
-              isDark
-                ? "bg-gray-800/50 border-gray-600 text-gray-100 placeholder-gray-400"
-                : "bg-gray-100/50 border-gray-300 text-gray-900 placeholder-gray-500"
-            }`}
+            className="min-h-[44px] max-h-[200px] resize-none bg-muted/50 border-border text-foreground placeholder:text-muted-foreground text-sm pr-12 rounded-lg focus-visible:ring-1 focus-visible:ring-ring"
             rows={1}
           />
         </div>
@@ -75,23 +63,22 @@ export function ChatInput({
         <Button
           onClick={handleSubmit}
           disabled={disabled || !message.trim()}
-          className={`${
+          size="icon"
+          className={`h-9 w-9 rounded-lg shrink-0 transition-colors ${
             disabled || !message.trim()
-              ? isDark
-                ? "bg-gray-700 text-gray-500"
-                : "bg-gray-300 text-gray-400"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
-          } transition-colors duration-200`}
+              ? "bg-muted text-muted-foreground"
+              : "bg-primary text-primary-foreground hover:bg-primary/90"
+          }`}
         >
-          {disabled ? <Square size={16} /> : <Send size={16} />}
+          {disabled ? <Square size={14} /> : <ArrowUp size={16} />}
         </Button>
       </div>
 
-      {/* Keyboard shortcuts help */}
-      <div className={`text-xs mt-2 text-center ${isDark ? "text-gray-500" : "text-gray-400"}`}>
-        <kbd className={`px-1 py-0.5 rounded text-xs ${isDark ? "bg-gray-700" : "bg-gray-200"}`}>Enter</kbd> to send
-        •<kbd className={`px-1 py-0.5 rounded text-xs ml-1 ${isDark ? "bg-gray-700" : "bg-gray-200"}`}>Shift</kbd> +
-        <kbd className={`px-1 py-0.5 rounded text-xs ${isDark ? "bg-gray-700" : "bg-gray-200"}`}>Enter</kbd> for new Line
+      <div className="text-[11px] mt-1.5 text-center text-muted-foreground">
+        <kbd className="px-1 py-0.5 rounded text-[10px] bg-muted font-mono">Enter</kbd>
+        <span className="mx-1">to send</span>
+        <kbd className="px-1 py-0.5 rounded text-[10px] bg-muted font-mono">Shift+Enter</kbd>
+        <span className="ml-1">for new line</span>
       </div>
     </div>
   )

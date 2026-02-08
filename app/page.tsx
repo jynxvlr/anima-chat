@@ -334,17 +334,17 @@ export default function ChatPage() {
 
   if (!config) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-white">
-          <Loader2 className="h-6 w-6 animate-spin" />
-          <span>Loading configuration...</span>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex items-center gap-3 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm">Loading...</span>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`min-h-screen flex ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}>
+    <div className="min-h-screen h-screen flex bg-background">
       {/* Sidebar */}
       <ChatSidebar
         chats={chats}
@@ -362,73 +362,66 @@ export default function ChatPage() {
       />
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {currentSession ? (
           <>
-            {/* Chat area */}
             <div className="flex-1 overflow-hidden">
               <div className="h-full flex flex-col">
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {currentSession.messages.length === 0 ? (
-                    <div
-                      className={`flex items-center justify-center h-full ${
-                        theme === "dark" ? "text-gray-400" : "text-gray-600"
-                      }`}
-                    >
-                      <div className="text-center">
-                        <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
-                        <p className="text-lg font-medium">Start a conversation</p>
-                        <p className="text-sm mt-2">Write a message and press Enter</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {currentSession.messages.map((message, index) => (
-                        <ChatMessage
-                          key={`${message.timestamp}-${message.role}-${index}`}
-                          message={message}
-                          showTimestamp={config.ui.show_timestamps}
-                          showWordCount={config.ui.show_word_count}
-                          compactMode={config.ui.compact_mode}
-                          theme={theme}
-                        />
-                      ))}
-
-                      {/* Streaming message */}
-                      {streamingMessage && (
-                        <ChatMessage
-                          message={{
-                            role: "assistant",
-                            content: streamingMessage,
-                            timestamp: Date.now(),
-                          }}
-                          showTimestamp={config.ui.show_timestamps}
-                          showWordCount={config.ui.show_word_count}
-                          compactMode={config.ui.compact_mode}
-                          theme={theme}
-                        />
-                      )}
-
-                      {/* Loading indicator */}
-                      {isLoading && !streamingMessage && (
-                        <div className="flex gap-4 p-4">
-                          <div
-                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              theme === "dark" ? "bg-gray-600" : "bg-gray-300"
-                            }`}
-                          >
-                            <Loader2 className="w-4 h-4 animate-spin text-white" />
+                <div className="flex-1 overflow-y-auto">
+                  <div className="max-w-3xl mx-auto px-4 py-6">
+                    {currentSession.messages.length === 0 ? (
+                      <div className="flex items-center justify-center h-[60vh]">
+                        <div className="text-center">
+                          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                            <MessageSquare size={20} className="text-primary" />
                           </div>
-                          <div className={theme === "dark" ? "text-gray-400" : "text-gray-600"}>AI is thinking...</div>
+                          <p className="text-base font-medium text-foreground">Start a conversation</p>
+                          <p className="text-sm text-muted-foreground mt-1">Write a message below to begin</p>
                         </div>
-                      )}
-                    </>
-                  )}
-                  <div ref={messagesEndRef} />
+                      </div>
+                    ) : (
+                      <>
+                        {currentSession.messages.map((message, index) => (
+                          <ChatMessage
+                            key={`${message.timestamp}-${message.role}-${index}`}
+                            message={message}
+                            showTimestamp={config.ui.show_timestamps}
+                            showWordCount={config.ui.show_word_count}
+                            compactMode={config.ui.compact_mode}
+                            theme={theme}
+                          />
+                        ))}
+
+                        {streamingMessage && (
+                          <ChatMessage
+                            message={{
+                              role: "assistant",
+                              content: streamingMessage,
+                              timestamp: Date.now(),
+                            }}
+                            showTimestamp={config.ui.show_timestamps}
+                            showWordCount={config.ui.show_word_count}
+                            compactMode={config.ui.compact_mode}
+                            theme={theme}
+                          />
+                        )}
+
+                        {isLoading && !streamingMessage && (
+                          <div className="flex gap-3 py-4 animate-fade-in">
+                            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
+                            </div>
+                            <div className="text-sm text-muted-foreground pt-1">Thinking...</div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
                 </div>
 
-                {/* Input area */}
+                {/* Input */}
                 <ChatInput
                   onSendMessage={sendMessage}
                   disabled={isLoading}
@@ -439,18 +432,19 @@ export default function ChatPage() {
             </div>
           </>
         ) : (
-          <div
-            className={`flex-1 flex items-center justify-center ${
-              theme === "dark" ? "text-gray-400" : "text-gray-600"
-            }`}
-          >
+          <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <MessageSquare size={64} className="mx-auto mb-6 opacity-30" />
-              <h2 className="text-2xl font-semibold mb-2">Welcome to Anima</h2>
-              <p className="text-lg mb-6">Select a chat or create a new one</p>
-              <Button onClick={createNewChat} className="bg-blue-600 hover:bg-blue-700 text-white">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Start new chat
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                <MessageSquare size={28} className="text-primary" />
+              </div>
+              <h2 className="text-xl font-semibold text-foreground mb-1.5 text-balance">Welcome to Anima</h2>
+              <p className="text-sm text-muted-foreground mb-6">Select a chat or start a new conversation</p>
+              <Button
+                onClick={createNewChat}
+                className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+              >
+                <MessageSquare className="h-4 w-4" />
+                New conversation
               </Button>
             </div>
           </div>
